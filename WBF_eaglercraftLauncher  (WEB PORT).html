@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Eaglercraft Web Launcher</title>
+  <style>
+    body {
+      background-color: #000000;  /* Black background */
+      color: #C0C0C0;             /* Classic greyish white text */
+      font-family: "Courier New", Courier, monospace;
+      padding: 20px;
+      margin: 0;
+      overflow-x: hidden;
+      white-space: pre-wrap;
+    }
+
+    #console {
+      max-width: 600px;
+      margin: auto;
+      line-height: 1.4;
+      font-size: 1rem;
+    }
+
+    select, button {
+      font-family: "Courier New", Courier, monospace;
+      font-size: 1rem;
+      background-color: #000000;
+      color: #C0C0C0;
+      border: 1px solid #C0C0C0;
+      margin: 10px 0 20px 0;
+      padding: 5px;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: #222;
+      cursor: pointer;
+    }
+
+    ::selection {
+      background: #C0C0C0;
+      color: #000;
+    }
+
+    .prompt-line {
+      margin-bottom: 0.2em;
+    }
+
+    .prompt {
+      color: #C0C0C0;
+      user-select: none;
+      margin-right: 0.5em;
+    }
+
+    .input-container {
+      display: flex;
+      align-items: center;
+    }
+
+    .input-container > select,
+    .input-container > button {
+      flex-grow: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="console"></div>
+
+  <script>
+    const consoleEl = document.getElementById('console');
+
+    // Text lines to "type"
+    const lines = [
+      "Eaglercraft Launcher WEB PORT v1.0",
+      "",
+      "Select a version:",
+      "============================"
+    ];
+
+    const typingSpeed = 1;
+    let currentLine = 0;
+    let currentChar = 0;
+
+    // Toggle this to true/false to enable/disable the alert
+    const showAlert = false;
+
+    function typeLine() {
+      if (currentLine >= lines.length) {
+        showInputUI();
+        if (showAlert) {
+          alert("⚠️ This is a direct-launcher, not a browser chooser.");
+        }
+        return;
+      }
+
+      if (currentChar === 0) {
+        const lineEl = document.createElement('div');
+        lineEl.id = 'line-' + currentLine;
+        consoleEl.appendChild(lineEl);
+      }
+
+      const lineEl = document.getElementById('line-' + currentLine);
+      lineEl.textContent += lines[currentLine][currentChar];
+      currentChar++;
+
+      if (currentChar < lines[currentLine].length) {
+        setTimeout(typeLine, typingSpeed);
+      } else {
+        currentLine++;
+        currentChar = 0;
+        consoleEl.appendChild(document.createElement('br'));
+        setTimeout(typeLine, typingSpeed);
+      }
+    }
+
+    function showInputUI() {
+      const versionLine = document.createElement('div');
+      versionLine.className = 'prompt-line input-container';
+      const versionPrompt = document.createElement('span');
+      versionPrompt.className = 'prompt';
+      versionPrompt.textContent = 'C:\\>';
+
+      const versionSelect = document.createElement('select');
+      versionSelect.id = 'version';
+      versionSelect.innerHTML = `
+        <option value="">-- Choose Version --</option>
+        <option value="https://eaglercraft.com/mc/1.5.2">Eaglercraft 1.5.2</option>
+        <option value="https://eaglercraft.com/mc/1.8.8">Eaglercraft 1.8.8</option>
+        <option value="https://eaglercraft.com/mc/1.12.2">Eaglercraft 1.12.2</option>
+      `;
+
+      versionLine.appendChild(versionPrompt);
+      versionLine.appendChild(versionSelect);
+      consoleEl.appendChild(versionLine);
+
+      const browserNote = document.createElement('div');
+      browserNote.style.marginBottom = '10px';
+      browserNote.textContent = "(Note: This will open in your current browser)";
+      consoleEl.appendChild(browserNote);
+
+      const buttonLine = document.createElement('div');
+      buttonLine.className = 'prompt-line input-container';
+
+      const buttonPrompt = document.createElement('span');
+      buttonPrompt.className = 'prompt';
+      buttonPrompt.textContent = 'C:\\>';
+
+      const launchBtn = document.createElement('button');
+      launchBtn.textContent = 'Launch Eaglercraft';
+      launchBtn.onclick = launch;
+
+      buttonLine.appendChild(buttonPrompt);
+      buttonLine.appendChild(launchBtn);
+      consoleEl.appendChild(buttonLine);
+    }
+
+    function launch() {
+      const version = document.getElementById('version').value;
+      if (!version) {
+        alert('Please select a version.');
+        return;
+      }
+      window.open(version, '_blank');
+    }
+
+    typeLine();
+  </script>
+</body>
+</html>
